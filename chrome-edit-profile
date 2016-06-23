@@ -1,0 +1,32 @@
+#!/bin/bash
+
+SOURCE="${BASH_SOURCE[0]}"
+DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do 
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+  DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+temp_dir="$DIR/base.browser.profile/"
+
+chmod -R u+rw $temp_dir
+
+chromium-browser --user-data-dir="$temp_dir" --no-default-browser-check --bwsi --no-first-run --disable-sync $@
+
+SAVEIFS=$IFS
+IFS=$(echo -en "\n\b")
+for f in `cat $DIR/remove.list`; do 
+  cd $temp_dir
+  rm -rf "$f"
+done
+IFS=$SAVEIFS
+
+rm -rf */History*
+rm -rf */Cache*
+rm -rf History*
+rm -rf Cache*
+
+chmod -R a-w $temp_dir

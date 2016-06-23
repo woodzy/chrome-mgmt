@@ -1,0 +1,22 @@
+#!/bin/bash
+temp_dir=`mktemp -d`
+
+SOURCE="${BASH_SOURCE[0]}"
+DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do 
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+  DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+chmod a-rw $temp_dir
+chmod u+rwx $temp_dir
+cp -R $DIR/base.browser.profile/* $temp_dir
+chmod -R u+rw $temp_dir
+cp -Rf $DIR/proxy.overlay/* $temp_dir
+
+chromium-browser --user-data-dir="$temp_dir" --no-default-browser-check --bwsi --no-first-run --disable-sync --proxy-server=http://127.0.0.1:8081 $@
+
+rm -rf $temp_dir
