@@ -10,11 +10,11 @@ do
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-temp_dir="$DIR/base.browser.profile/"
+temp_dir="$DIR/gchrome.browser.profile/"
 
 chmod -R u+rw $temp_dir
 
-chromium-browser --user-data-dir="$temp_dir" --no-default-browser-check --bwsi --no-first-run --disable-sync --password-store=basic $@
+google-chrome --user-data-dir="$temp_dir" --no-default-browser-check --bwsi --no-first-run --disable-sync $@
 
 SAVEIFS=$IFS
 IFS=$(echo -en "\n\b")
